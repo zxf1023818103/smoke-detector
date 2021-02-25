@@ -8,12 +8,14 @@
 #include <msp430.h>
 #include "smokedetector.h"
 
+char test_button;
+
 void setup() {
     clock_1mhz_init();
     software_trim();
     watchdog_init();
     timer_500ms_init();
-    //ir_on();
+    ir_on();
     led_off();
     uart_38400bps_init();
     buzzer_init();
@@ -29,22 +31,31 @@ int main(void)
 
     setup();
 
-    ir_on();
-
     __enable_interrupt();
 }
 
 void button_pressed_callback() {
+    if (!alarm_status()) {
+        test_button = 1;
+    }
     alarm_on();
 }
 
 void button_released_callback() {
     alarm_off();
+    if (test_button) {
+        test_button = 0;
+    }
+    else {
+        alarm_silent();
+    }
 }
 
 void adc_sample_callback(unsigned short adc_value) {
-    //zigbee_println(adc_value);
-    if (adc_value > 800) {
+    if (settings_get_adc_output_enabled()) {
+        zigbee_println(adc_value);
+    }
+    if (adc_value > settings_get_sensitivity()) {
         alarm_on();
     }
 }

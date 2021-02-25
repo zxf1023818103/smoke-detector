@@ -1,1 +1,0 @@
-"./adc.obj" "./alarm.obj" "./button.obj" "./buzzer.obj" "./clock.obj" "./led.obj" "./main.obj" "./timer.obj" "./uart.obj" "./watchdog.obj" "./zigbee.obj" "../lnk_msp430fr2311.cmd" -llibc.a 

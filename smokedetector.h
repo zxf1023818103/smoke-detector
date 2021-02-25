@@ -27,6 +27,8 @@ int buzzer_status();
 
 void alarm_on();
 void alarm_off();
+void alarm_silent();
+int alarm_status();
 void alarm_test();
 void alarm_loop();
 
@@ -50,8 +52,14 @@ void uart_puts(const char *str);
 void uart_write(const char *data, unsigned int len);
 void uart_newline_callback(char *str, unsigned int len) __attribute__((weak));
 
-void zigbee_send_alarm();
 void zigbee_send(const char *str);
 void zigbee_println(unsigned short value);
+
+void settings_set_sensitivity(unsigned int value);
+unsigned int settings_get_sensitivity();
+void settings_set_alarm_silent_cycles(unsigned int value);
+unsigned int settings_get_alarm_silent_cycles();
+void settings_set_adc_output_enabled(char value);
+char settings_get_adc_output_enabled();
 
 #endif /* SMOKEDETECTOR_H_ */

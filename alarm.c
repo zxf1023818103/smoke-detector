@@ -8,30 +8,45 @@
 #include <msp430.h>
 #include "smokedetector.h"
 
-char test;
-char alarm;
+static char test;
+static char alarm;
+static unsigned int silent_cycles;
 
 void alarm_test() {
     test = 1;
 }
 
 void alarm_on() {
-    zigbee_send_alarm();
+    //zigbee_send("alarm on");
     alarm = 1;
 }
 
 void alarm_off() {
+    zigbee_send("alarm off");
     alarm = 0;
 }
 
+int alarm_status() {
+    return alarm;
+}
+
+void alarm_silent() {
+    silent_cycles = settings_get_alarm_silent_cycles();
+}
+
 void alarm_loop() {
+    if (silent_cycles) {
+        alarm = 0;
+        silent_cycles--;
+    }
+
     if (alarm) {
         if (!buzzer_status()) {
             buzzer_on();
         }
         else {
             buzzer_off();
-            zigbee_send_alarm();
+            zigbee_send("alarm on");
         }
     }
     else {

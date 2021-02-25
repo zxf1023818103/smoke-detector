@@ -14,10 +14,8 @@ void zigbee_send(const char *str) {
     uart_print(str);
     uart_putchar('\r');
     uart_putchar('\n');
-}
-
-void zigbee_send_alarm() {
-    zigbee_send("alarm\r\n");
+    uart_putchar('\r');
+    uart_putchar('\n');
 }
 
 void zigbee_println(unsigned short value) {
@@ -41,20 +39,45 @@ void zigbee_println(unsigned short value) {
 }
 
 void uart_newline_callback(char *str, unsigned int len) {
-    int ok = 0;
     if (strncmp("test\r\n", str, len) == 0) {
         alarm_test();
-        ok = 1;
+        zigbee_send("ok");
     }
     else if (strncmp("alarm on\r\n", str, len) == 0) {
         alarm_on();
-        ok = 1;
     }
     else if (strncmp("alarm off\r\n", str, len) == 0) {
         alarm_off();
-        ok = 1;
     }
-    if (ok) {
-        zigbee_send("ok\r\n");
+    else if (strncmp("alarm status\r\n", str, len) == 0) {
+        zigbee_send(alarm_status() ? "alarm on" : "alarm off");
+    }
+    else if (strncmp("sensitivity status\r\n", str, len) == 0) {
+        unsigned int sensitivity = settings_get_sensitivity();
+        zigbee_send(sensitivity == 700 ? "sensitivity=0" : (sensitivity == 800 ? "sensitivity=1" : (sensitivity == 900 ? "sensitivity=2" : "sensitivity=3")));
+    }
+    else if (strncmp("sensitivity=0\r\n", str, len) == 0) {
+        settings_set_sensitivity(700);
+        zigbee_send("ok");
+    }
+    else if (strncmp("sensitivity=1\r\n", str, len) == 0) {
+        settings_set_sensitivity(800);
+        zigbee_send("ok");
+    }
+    else if (strncmp("sensitivity=2\r\n", str, len) == 0) {
+        settings_set_sensitivity(900);
+        zigbee_send("ok");
+    }
+    else if (strncmp("sensitivity=3\r\n", str, len) == 0) {
+        settings_set_sensitivity(1000);
+        zigbee_send("ok");
+    }
+    else if (strncmp("adc_output_enabled=0\r\n", str, len) == 0) {
+        settings_set_adc_output_enabled(0);
+        zigbee_send("ok");
+    }
+    else if (strncmp("adc_output_enabled=1\r\n", str, len) == 0) {
+        settings_set_adc_output_enabled(1);
+        zigbee_send("ok");
     }
 }
