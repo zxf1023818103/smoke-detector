@@ -17,7 +17,6 @@ void alarm_test() {
 }
 
 void alarm_on() {
-    //zigbee_send("alarm on");
     alarm = 1;
 }
 
@@ -53,6 +52,7 @@ void alarm_loop() {
     }
     else {
         if (!test) {
+            led_off();
             buzzer_off();
         }
     }
