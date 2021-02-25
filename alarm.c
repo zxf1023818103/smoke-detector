@@ -42,10 +42,12 @@ void alarm_loop() {
 
     if (alarm) {
         if (!buzzer_status()) {
+            led_on();
             buzzer_on();
         }
         else {
             buzzer_off();
+            led_off();
             zigbee_send("alarm on");
         }
     }
