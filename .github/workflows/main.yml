@@ -18,23 +18,23 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - name: Cache CCSv10
-        uses: action/cache@v2
-        id: ccs
-        with:
-          path: /opt/ti/ccs1020
-          key: ${{ runner.os }}-ccs
+#      - name: Cache CCSv10
+#        uses: actions/cache@v2
+#        id: ccs
+#        with:
+#          path: /opt/ti/ccs1020
+#          key: ${{ runner.os }}-ccs
       
-      - name: Cache CCSv10 installer
-        uses: action/cache@v2
-        if: steps.ccs.outputs.cache-hit != 'true'
-        id: ccs-installer
-        with:
-          path: /tmp/CCS10.2.0.00009_linux-x64
-          key: ${{ runner.os }}-ccs-installer
-          
+#      - name: Cache CCSv10 installer
+#        uses: actions/cache@v2
+#        if: steps.ccs.outputs.cache-hit != 'true'
+#        id: ccs-installer
+#        with:
+#          path: /tmp/CCS10.2.0.00009_linux-x64
+#          key: ${{ runner.os }}-ccs-installer
+
       - name: Download CCSv10 installer
-        if: steps.ccs.outputs.cache-hit != 'true' && steps.ccs-installer.outputs.cache-hit != 'true'
+        #if: steps.ccs.outputs.cache-hit != 'true' && steps.ccs-installer.outputs.cache-hit != 'true'
         run: curl -L "https://downloads.ti.com/ccs/esd/CCSv10/CCS_10_2_0/exports/CCS10.2.0.00009_linux-x64.tar.gz" | tar xzf - -C /tmp
       
       - name: Install dependences
@@ -42,12 +42,19 @@ jobs:
         run: sudo apt update && sudo apt install libc6:i386 libusb-0.1-4 libgconf-2-4 libncurses5 libpython2.7 libtinfo5
       
       - name: Install CCSv10
-        if: steps.ccs.outputs.cache-hit != 'true'
-        run: sudo $GITHUB_WORKSPACE/CCS10.2.0.00009_linux-x64/ccs_setup_10.2.0.00009.run --enable-components PF_MSP430 --mode unattended
+        #if: steps.ccs.outputs.cache-hit != 'true'
+        run: sudo /tmp/CCS10.2.0.00009_linux-x64/ccs_setup_10.2.0.00009.run --enable-components PF_MSP430 --mode unattended
       
       - name: Checkout
-        uses: action/checkout@v2
+        uses: actions/checkout@v2
       
-      - name: Build
-        run: /opt/ti/ccs1020/eclipse/eclipsec -noSplash -data $GITHUB_WORKSPACE -application com.ti.ccstudio.apps.projectBuild -ccs.workspace
+      - name: Install TI MSP430 compiler
+        #if: steps.ccs.outputs.cache-hit != 'true'
+        run: sudo /opt/ti/ccs1020/ccs/eclipse/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository  http://software-dl.ti.com/dsps/dsps_public_sw/sdo_ccstudio/codegen/Updates/p2linux/ -installIU com.ti.cgt.msp430.21.linux.feature.group/20.12.0
   
+      - name: Import project to workspace
+        run: /opt/ti/ccs1020/ccs/eclipse/eclipse -noSplash -data $GITHUB_WORKSPACE -application com.ti.ccstudio.apps.projectImport -ccs.location $GITHUB_WORKSPACE/smoke-detector
+
+      - name: Build project
+        run: /opt/ti/ccs1020/ccs/eclipse/eclipse -noSplash -data $GITHUB_WORKSPACE -application com.ti.ccstudio.apps.projectBuild -ccs.workspace
+        
