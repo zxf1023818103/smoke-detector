@@ -45,16 +45,21 @@ jobs:
         #if: steps.ccs.outputs.cache-hit != 'true'
         run: sudo /tmp/CCS10.2.0.00009_linux-x64/ccs_setup_10.2.0.00009.run --enable-components PF_MSP430 --mode unattended
       
+      - name: Install TI MSP430 compiler
+        #if: steps.ccs.outputs.cache-hit != 'true'
+        run: sudo /opt/ti/ccs1020/ccs/eclipse/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository  http://software-dl.ti.com/dsps/dsps_public_sw/sdo_ccstudio/codegen/Updates/p2linux/ -i com.ti.cgt.msp430.21.linux.feature.group/20.12.0,com.ti.cgt.msp430.21.linux.feature.jar/20.12.0,com.ti.cgt.msp430.21.linux_root/20.12.0
+        
       - name: Checkout
         uses: actions/checkout@v2
       
-      - name: Install TI MSP430 compiler
-        #if: steps.ccs.outputs.cache-hit != 'true'
-        run: /opt/ti/ccs1020/ccs/eclipse/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository  http://software-dl.ti.com/dsps/dsps_public_sw/sdo_ccstudio/codegen/Updates/p2linux/ -i com.ti.cgt.msp430.21.linux.feature.group/20.12.0,com.ti.cgt.msp430.21.linux.feature.jar/20.12.0,com.ti.cgt.msp430.21.linux_root/20.12.0
-        
       - name: Import project to workspace
         run: /opt/ti/ccs1020/ccs/eclipse/eclipse -noSplash -data $GITHUB_WORKSPACE/../ -application com.ti.ccstudio.apps.projectImport -ccs.location $GITHUB_WORKSPACE
 
       - name: Build project
         run: /opt/ti/ccs1020/ccs/eclipse/eclipse -noSplash -data $GITHUB_WORKSPACE/.. -application com.ti.ccstudio.apps.projectBuild -ccs.workspace
         
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: smoke-detector
+          path: $GITHUB_WORKSPACE/Debug/smoke-detector.out
