@@ -15,7 +15,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
 
     steps:
 #      - name: Cache CCSv10
@@ -39,7 +39,7 @@ jobs:
       
       - name: Install dependences
         #if: steps.ccs.outputs.cache-hit != 'true'
-        run: sudo apt-get update && sudo apt-get install -y gcc-muiltilib libusb-0.1-4 libgconf-2-4 libncurses5 libpython2.7 libtinfo5
+        run: sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install -y libc6:i386 libusb-0.1-4 libgconf-2-4 libncurses5 libpython2.7 libtinfo5
       
       - name: Install CCSv10
         #if: steps.ccs.outputs.cache-hit != 'true'
