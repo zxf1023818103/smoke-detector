@@ -45,10 +45,10 @@ jobs:
       - name: Build project
         run: /opt/ti/ccs1020/ccs/eclipse/eclipse -noSplash -data $GITHUB_WORKSPACE/.. -application com.ti.ccstudio.apps.projectBuild -ccs.workspace
 
-      - run: ls -l $GITHUB_WORKSPACE
+      - run: ls -l $GITHUB_WORKSPACE/Debug
       
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          path: $HOME/**/*.out
+          path: $GITHUB_WORKSPACE/Debug/*.out
           if-no-files-found: error
