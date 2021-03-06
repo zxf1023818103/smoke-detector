@@ -25,21 +25,21 @@ jobs:
 #          path: /opt/ti/ccs1020
 #          key: ${{ runner.os }}-ccs
       
-#      - name: Cache CCSv10 installer
-#        uses: actions/cache@v2
-#        if: steps.ccs.outputs.cache-hit != 'true'
-#        id: ccs-installer
-#        with:
-#          path: /tmp/CCS10.2.0.00009_linux-x64
-#          key: ${{ runner.os }}-ccs-installer
+      - name: Cache CCSv10 installer
+        uses: actions/cache@v2
+        #if: steps.ccs.outputs.cache-hit != 'true'
+        id: ccs-installer
+        with:
+          path: /tmp/CCS10.2.0.00009_linux-x64
+          key: ${{ runner.os }}-ccs-installer
 
       - name: Download CCSv10 installer
-        #if: steps.ccs.outputs.cache-hit != 'true' && steps.ccs-installer.outputs.cache-hit != 'true'
+        if: steps.ccs-installer.outputs.cache-hit != 'true'
         run: curl -L "https://downloads.ti.com/ccs/esd/CCSv10/CCS_10_2_0/exports/CCS10.2.0.00009_linux-x64.tar.gz" | tar xzf - -C /tmp
       
       - name: Install dependences
         #if: steps.ccs.outputs.cache-hit != 'true'
-        run: sudo apt update && sudo apt install libc6:i386 libusb-0.1-4 libgconf-2-4 libncurses5 libpython2.7 libtinfo5
+        run: sudo apt-get update && sudo apt-get install -y libc6:i386 libusb-0.1-4 libgconf-2-4 libncurses5 libpython2.7 libtinfo5
       
       - name: Install CCSv10
         #if: steps.ccs.outputs.cache-hit != 'true'
