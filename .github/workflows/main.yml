@@ -12,27 +12,29 @@ jobs:
 
     steps:
       - name: Download CCSv10 installer
-        if: steps.ccs-installer.outputs.cache-hit != 'true'
+        if: steps.ccs.outputs.cache-hit != 'true'
         run: curl -L "https://downloads.ti.com/ccs/esd/CCSv10/CCS_10_2_0/exports/CCS10.2.0.00009_linux-x64.tar.gz" | tar xzf - -C /tmp
-      
-      - name: Cache CCSv10 installer
-        uses: actions/cache@v2
-        id: ccs-installer
-        with:
-          path: /tmp/CCS10.2.0.00009_linux-x64
-          key: ${{ runner.os }}-ccs-installer
       
       - name: Install dependences
         run: sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install -y libc6:i386 libusb-0.1-4 libgconf-2-4 libncurses5 libpython2.7 libtinfo5
       
       - name: Install CCSv10
+        if: steps.ccs.outputs.cache-hit != 'true'
         run: sudo /tmp/CCS10.2.0.00009_linux-x64/ccs_setup_10.2.0.00009.run --enable-components PF_MSP430 --mode unattended
       
       - name: Install TI MSP430 compiler
+        if: steps.ccs.outputs.cache-hit != 'true'
         run: |
           sudo /opt/ti/ccs1020/ccs/eclipse/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository  http://software-dl.ti.com/dsps/dsps_public_sw/sdo_ccstudio/codegen/Updates/p2linux/ -installIU com.ti.cgt.msp430.21.linux.feature.group/20.12.0 -tag "MSP430 Compiler Tools"
           sudo /opt/ti/ccs1020/ccs/eclipse/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository  http://software-dl.ti.com/dsps/dsps_public_sw/sdo_ccstudio/codegen/Updates/p2linux/ -installIU com.ti.cgt.msp430.21.linux_root/20.12.0 -tag "MSP430 Compiler Tools"
           sudo /opt/ti/ccs1020/ccs/eclipse/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository  http://software-dl.ti.com/dsps/dsps_public_sw/sdo_ccstudio/codegen/Updates/p2linux/ -installIU com.ti.cgt.msp430.21.linux.feature.jar/20.12.0 -tag "MSP430 Compiler Tools"
+        
+      - name: Cache CCSv10
+        id: ccs
+        uses: actions/cache@v2
+        with:
+          path: /opt/ti
+          key: ${{ runner.os }}-ccs
         
       - name: Checkout
         uses: actions/checkout@v2
@@ -46,5 +48,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          path: $GITHUB_WORKSPACE/../**/smoke-detector.out
+          path: $HOME/**/smoke-detector.out
           if-no-files-found: error
