@@ -1,4 +1,4 @@
-name: CI
+name: Build
 
 on:
   push:
@@ -45,7 +45,7 @@ jobs:
       - name: Build project
         run: /opt/ti/ccs1020/ccs/eclipse/eclipse -noSplash -data $GITHUB_WORKSPACE/.. -application com.ti.ccstudio.apps.projectBuild -ccs.workspace
 
-      - name: Upload artifact
+      - name: Upload build artifact
         uses: actions/upload-artifact@v2
         with:
           path: ${{ github.workspace }}/Debug/smoke-detector.out
