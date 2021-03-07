@@ -11,6 +11,13 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Cache CCSv10
+        id: ccs
+        uses: actions/cache@v2
+        with:
+          path: /opt/ti
+          key: ${{ runner.os }}-ccs
+      
       - name: Download CCSv10 installer
         if: steps.ccs.outputs.cache-hit != 'true'
         run: curl -L "https://downloads.ti.com/ccs/esd/CCSv10/CCS_10_2_0/exports/CCS10.2.0.00009_linux-x64.tar.gz" | tar xzf - -C /tmp
@@ -29,13 +36,6 @@ jobs:
           sudo /opt/ti/ccs1020/ccs/eclipse/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository  http://software-dl.ti.com/dsps/dsps_public_sw/sdo_ccstudio/codegen/Updates/p2linux/ -installIU com.ti.cgt.msp430.21.linux_root/20.12.0 -tag "MSP430 Compiler Tools"
           sudo /opt/ti/ccs1020/ccs/eclipse/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository  http://software-dl.ti.com/dsps/dsps_public_sw/sdo_ccstudio/codegen/Updates/p2linux/ -installIU com.ti.cgt.msp430.21.linux.feature.jar/20.12.0 -tag "MSP430 Compiler Tools"
         
-      - name: Cache CCSv10
-        id: ccs
-        uses: actions/cache@v2
-        with:
-          path: /opt/ti
-          key: ${{ runner.os }}-ccs
-        
       - name: Checkout
         uses: actions/checkout@v2
       
@@ -45,10 +45,8 @@ jobs:
       - name: Build project
         run: /opt/ti/ccs1020/ccs/eclipse/eclipse -noSplash -data $GITHUB_WORKSPACE/.. -application com.ti.ccstudio.apps.projectBuild -ccs.workspace
 
-      - run: ls -l $GITHUB_WORKSPACE/Debug
-      
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          path: $GITHUB_WORKSPACE/Debug/*.out
+          path: ${{ github.workspace }}/Debug/smoke-detector.out
           if-no-files-found: error
