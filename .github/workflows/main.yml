@@ -1,8 +1,7 @@
-name: Build
+name: Build and Release
 
 on:
   push:
-    branches: [ main ]
 
   workflow_dispatch:
 
@@ -18,18 +17,18 @@ jobs:
           path: /opt/ti
           key: ${{ runner.os }}-ccs
       
-      - name: Download CCSv10 installer
+      - name: Download CCSv10 Installer
         if: steps.ccs.outputs.cache-hit != 'true'
         run: curl -L "https://downloads.ti.com/ccs/esd/CCSv10/CCS_10_2_0/exports/CCS10.2.0.00009_linux-x64.tar.gz" | tar xzf - -C /tmp
       
-      - name: Install dependences
+      - name: Install Dependences
         run: sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install -y libc6:i386 libusb-0.1-4 libgconf-2-4 libncurses5 libpython2.7 libtinfo5
       
       - name: Install CCSv10
         if: steps.ccs.outputs.cache-hit != 'true'
         run: sudo /tmp/CCS10.2.0.00009_linux-x64/ccs_setup_10.2.0.00009.run --enable-components PF_MSP430 --mode unattended
       
-      - name: Install TI MSP430 compiler
+      - name: Install TI MSP430 Compiler
         if: steps.ccs.outputs.cache-hit != 'true'
         run: |
           sudo /opt/ti/ccs1020/ccs/eclipse/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository  http://software-dl.ti.com/dsps/dsps_public_sw/sdo_ccstudio/codegen/Updates/p2linux/ -installIU com.ti.cgt.msp430.21.linux.feature.group/20.12.0 -tag "MSP430 Compiler Tools"
@@ -39,14 +38,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       
-      - name: Import project
+      - name: Import Project
         run: /opt/ti/ccs1020/ccs/eclipse/eclipse -noSplash -data $GITHUB_WORKSPACE/.. -application com.ti.ccstudio.apps.projectImport -ccs.location $GITHUB_WORKSPACE
 
-      - name: Build project
+      - name: Build Project
         run: /opt/ti/ccs1020/ccs/eclipse/eclipse -noSplash -data $GITHUB_WORKSPACE/.. -application com.ti.ccstudio.apps.projectBuild -ccs.workspace
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v2
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          path: ${{ github.workspace }}/Debug/smoke-detector.out
-          if-no-files-found: error
+          fail_on_unmatched_files: true
+          files: ${{ github.workspace }}/Debug/smoke-detector.out
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
