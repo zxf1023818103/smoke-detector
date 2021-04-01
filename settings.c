@@ -5,24 +5,29 @@
  *      Author: Zeng Xiangfei
  */
 
+#include <string.h>
 #include <msp430.h>
 
 #ifdef __TI_COMPILER_VERSION__
 
 #pragma PERSISTENT(sensitivity)
-unsigned int sensitivity = 700;
+static unsigned int sensitivity = 700;
 
 #pragma PERSISTENT(alarm_silent_cycles)
-unsigned int alarm_silent_cycles = 96;
+static unsigned int alarm_silent_cycles = 96;
 
 #pragma PERSISTENT(adc_output_enabled)
-char adc_output_enabled = 0;
+static char adc_output_enabled = 0;
+
+#pragma PERSISTENT(name)
+static char name[32] = "Smoker Detector";
 
 #elif __IAR_SYSTEMS_ICC__
 
-__persistent unsigned int sensitivity = 700;
-__persistent unsigned int alarm_silent_cycles = 96;
-__persistent char adc_output_enabled = 0;
+__persistent static unsigned int sensitivity = 700;
+__persistent static unsigned int alarm_silent_cycles = 96;
+__persistent static char adc_output_enabled = 0;
+__persistent static char name[32];
 
 #else
 
@@ -60,4 +65,14 @@ void settings_set_adc_output_enabled(char value) {
 
 char settings_get_adc_output_enabled() {
     return adc_output_enabled;
+}
+
+void settings_set_name(char *value) {
+    SYSCFG0 = FRWPPW;                   // Program FRAM write enable
+    strncpy(name, value, sizeof name);
+    SYSCFG0 = FRWPPW | PFWP;            // Program FRAM write protected (not writable)
+}
+
+const char *settings_get_name() {
+    return name;
 }

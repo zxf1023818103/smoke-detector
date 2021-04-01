@@ -16,6 +16,10 @@ void alarm_test() {
     test = 1;
 }
 
+char alarm_is_test() {
+    return test;
+}
+
 void alarm_on() {
     alarm = 1;
 }

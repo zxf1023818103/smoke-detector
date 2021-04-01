@@ -30,6 +30,7 @@ void alarm_off();
 void alarm_silent();
 int alarm_status();
 void alarm_test();
+char alarm_is_test();
 void alarm_loop();
 
 void adc_init();
@@ -61,5 +62,11 @@ void settings_set_alarm_silent_cycles(unsigned int value);
 unsigned int settings_get_alarm_silent_cycles();
 void settings_set_adc_output_enabled(char value);
 char settings_get_adc_output_enabled();
+void settings_set_name(char *value);
+const char *settings_get_name();
+
+void command_received_callback(char *command) __attribute__((weak));
+const char* attribute_read_callback(char *attribute) __attribute__((weak));
+void attribute_write_callback(char *attribute, char *value) __attribute__((weak));
 
 #endif /* SMOKEDETECTOR_H_ */

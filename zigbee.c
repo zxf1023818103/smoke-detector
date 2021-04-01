@@ -38,46 +38,78 @@ void zigbee_println(unsigned short value) {
     uart_putchar('\n');
 }
 
+static int isblank(char c) {
+    return c == ' ' || c == '\t' || c == '\r' || c == '\n';
+}
+
+static int trim(char **begin, char **end) {
+    if (*begin >= *end) {
+        return 0;
+    }
+
+    while (isblank(**begin) && *begin != *end) {
+        ++*begin;
+    }
+    if (*begin != *end) {
+        --*end;
+        while (isblank(**end)) {
+            --*end;
+        }
+        ++*end;
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+static void process_option(char *key_begin, char *key_end, char *value_begin, char *value_end) {
+    *key_end = 0;
+    *value_end = 0;
+    if (*value_begin == '?') {
+        const char *value = attribute_read_callback(key_begin);
+        if (value) {
+            zigbee_send(value);
+        }
+        else {
+            zigbee_send("ERROR: Invalid value");
+        }
+    }
+    else {
+        attribute_write_callback(key_begin, value_begin);
+    }
+}
+
+static void process_command(char *command_begin, char *command_end) {
+    *command_end = 0;
+    command_received_callback(command_begin);
+}
+
 void uart_newline_callback(char *str, unsigned int len) {
-    if (strncmp("test\r\n", str, len) == 0) {
-        alarm_test();
-        zigbee_send("ok");
+    char *equals = strchr(str, '=');
+    if (equals) {
+        char *key_begin = str, *key_end = equals;
+        if (trim(&key_begin, &key_end)) {
+            char *value_begin = equals + 1, *value_end = str + len;
+            if (trim(&value_begin, &value_end)) {
+                process_option(key_begin, key_end, value_begin, value_end);
+                return;
+            }
+            else {
+                zigbee_send("ERROR: excepted option value");
+            }
+        }
+        else {
+            zigbee_send("ERROR: excepted option name");
+        }
     }
-    else if (strncmp("alarm on\r\n", str, len) == 0) {
-        alarm_on();
-    }
-    else if (strncmp("alarm off\r\n", str, len) == 0) {
-        alarm_off();
-    }
-    else if (strncmp("alarm status\r\n", str, len) == 0) {
-        zigbee_send(alarm_status() ? "alarm on" : "alarm off");
-    }
-    else if (strncmp("sensitivity status\r\n", str, len) == 0) {
-        unsigned int sensitivity = settings_get_sensitivity();
-        zigbee_send(sensitivity == 700 ? "sensitivity=0" : (sensitivity == 800 ? "sensitivity=1" : (sensitivity == 900 ? "sensitivity=2" : "sensitivity=3")));
-    }
-    else if (strncmp("sensitivity=0\r\n", str, len) == 0) {
-        settings_set_sensitivity(700);
-        zigbee_send("ok");
-    }
-    else if (strncmp("sensitivity=1\r\n", str, len) == 0) {
-        settings_set_sensitivity(800);
-        zigbee_send("ok");
-    }
-    else if (strncmp("sensitivity=2\r\n", str, len) == 0) {
-        settings_set_sensitivity(900);
-        zigbee_send("ok");
-    }
-    else if (strncmp("sensitivity=3\r\n", str, len) == 0) {
-        settings_set_sensitivity(1000);
-        zigbee_send("ok");
-    }
-    else if (strncmp("adc_output_enabled=0\r\n", str, len) == 0) {
-        settings_set_adc_output_enabled(0);
-        zigbee_send("ok");
-    }
-    else if (strncmp("adc_output_enabled=1\r\n", str, len) == 0) {
-        settings_set_adc_output_enabled(1);
-        zigbee_send("ok");
+    else {
+        char *command_begin = str, *command_end = str + len;
+        if (trim(&command_begin, &command_end)) {
+            process_command(command_begin, command_end);
+        }
+        else {
+            return;
+        }
     }
 }

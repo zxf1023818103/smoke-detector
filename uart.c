@@ -9,7 +9,7 @@
 #include "smokedetector.h"
 
 unsigned int rxbuf_size;
-char rxbuf[32];
+char rxbuf[50];
 
 void uart_38400bps_init() {
     P1SEL1 &= ~(BIT6 | BIT7);                 // USCI_A0 UART operation
@@ -41,9 +41,11 @@ void uart_puts(const char *str) {
 }
 
 void uart_print(const char *str) {
-    char *p = (char *)str;
-    while (*p) {
-        uart_putchar(*p++);
+    if (str) {
+        char *p = (char *)str;
+        while (*p) {
+            uart_putchar(*p++);
+        }
     }
 }
 
