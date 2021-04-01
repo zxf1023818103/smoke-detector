@@ -74,6 +74,7 @@ static const char *sensitiviy_string = "sensitivity";
 static const char *alarm_string = "alarm";
 static const char *adc_output_enabled_string = "adc_output_enabled";
 static const char *alarm_silent_cycles_string = "alarm_silent_cycles";
+static const char *alarm_silent_string = "alarm_silent";
 static const char *ok_string = "ok";
 
 static char* reverse(char *str, int size) {
@@ -120,6 +121,9 @@ const char* attribute_read_callback(char *attribute) {
     else if (strcmp(adc_output_enabled_string, attribute) == 0) {
         return my_itoa(settings_get_adc_output_enabled(), result);
     }
+    else if (strcmp(alarm_silent_string, attribute) == 0) {
+        return my_itoa(alarm_silent_cycles(), result);
+    }
     else if (strcmp(alarm_silent_cycles_string, attribute) == 0) {
         return my_itoa(settings_get_alarm_silent_cycles(), result);
     }
@@ -151,29 +155,25 @@ static int my_atoi(char *value, unsigned int *result) {
     return 1;
 }
 
-void attribute_write_callback(char *attribute, char *value) {
+int attribute_write_callback(char *attribute, char *value) {
 
     unsigned int int_value;
     int result = my_atoi(value, &int_value);
 
     if (strcmp(name_string, attribute) == 0) {
         settings_set_name(value);
-        zigbee_send(ok_string);
     }
     else if (result) {
         if (strcmp(id_string, attribute) == 0) {
             settings_set_id(int_value);
-            zigbee_send(ok_string);
         }
         else if (strcmp(test_string, attribute) == 0) {
             if (int_value) {
                 alarm_test();
-                zigbee_send(ok_string);
             }
         }
         else if (strcmp(sensitiviy_string, attribute) == 0) {
             settings_set_sensitivity(int_value);
-            zigbee_send(ok_string);
         }
         else if (strcmp(alarm_string, attribute) == 0) {
             if (int_value) {
@@ -182,16 +182,23 @@ void attribute_write_callback(char *attribute, char *value) {
             else {
                 alarm_silent();
             }
-            zigbee_send(ok_string);
         }
         else if (strcmp(adc_output_enabled_string, attribute) == 0) {
             settings_set_adc_output_enabled(int_value != 0);
-            zigbee_send(ok_string);
         }
         else if (strcmp(alarm_silent_cycles_string, attribute) == 0) {
             settings_set_alarm_silent_cycles(int_value);
-            zigbee_send(ok_string);
         }
+        else {
+            /// unsupported operation or invalid key
+            return 1;
+        }
+        /// ok
+        return 0;
+    }
+    else {
+        /// invalid value
+        return 2;
     }
 }
 

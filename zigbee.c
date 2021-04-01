@@ -63,6 +63,8 @@ static int trim(char **begin, char **end) {
     }
 }
 
+static char *invalid_value_string = "ERROR: Invalid value";
+
 static void process_option(char *key_begin, char *key_end, char *value_begin, char *value_end) {
     *key_end = 0;
     *value_end = 0;
@@ -72,11 +74,24 @@ static void process_option(char *key_begin, char *key_end, char *value_begin, ch
             zigbee_send(value);
         }
         else {
-            zigbee_send("ERROR: Invalid value");
+            zigbee_send(invalid_value_string);
         }
     }
     else {
-        attribute_write_callback(key_begin, value_begin);
+        int result = attribute_write_callback(key_begin, value_begin);
+        switch (result) {
+        case 0:
+            zigbee_send("ok");
+            break;
+        case 1:
+            zigbee_send("ERROR: Invalid key or unsupported operation");
+            break;
+        case 2:
+            zigbee_send(invalid_value_string);
+            break;
+        default:
+            break;
+        }
     }
 }
 

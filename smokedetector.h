@@ -28,6 +28,7 @@ int buzzer_status();
 void alarm_on();
 void alarm_off();
 void alarm_silent();
+unsigned int alarm_silent_cycles();
 int alarm_status();
 void alarm_test();
 char alarm_is_test();
@@ -69,6 +70,6 @@ unsigned int settings_get_id();
 
 void command_received_callback(char *command) __attribute__((weak));
 const char* attribute_read_callback(char *attribute) __attribute__((weak));
-void attribute_write_callback(char *attribute, char *value) __attribute__((weak));
+int attribute_write_callback(char *attribute, char *value) __attribute__((weak));
 
 #endif /* SMOKEDETECTOR_H_ */
