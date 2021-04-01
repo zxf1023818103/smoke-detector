@@ -67,6 +67,7 @@ void timer_500ms_callback() {
     adc_sample();
 }
 
+static const char *id_string = "id";
 static const char *name_string = "name";
 static const char *test_string = "test";
 static const char *sensitiviy_string = "sensitivity";
@@ -101,7 +102,10 @@ static char* my_itoa(unsigned int value, char *buffer) {
 
 const char* attribute_read_callback(char *attribute) {
     static char result[6];
-    if (strcmp(name_string, attribute) == 0) {
+    if (strcmp(id_string, attribute) == 0) {
+        return my_itoa(settings_get_id(), result);
+    }
+    else if (strcmp(name_string, attribute) == 0) {
         return settings_get_name();
     }
     else if (strcmp(test_string, attribute) == 0) {
@@ -157,7 +161,11 @@ void attribute_write_callback(char *attribute, char *value) {
         zigbee_send(ok_string);
     }
     else if (result) {
-        if (strcmp(test_string, attribute) == 0) {
+        if (strcmp(id_string, attribute) == 0) {
+            settings_set_id(int_value);
+            zigbee_send(ok_string);
+        }
+        else if (strcmp(test_string, attribute) == 0) {
             if (int_value) {
                 alarm_test();
                 zigbee_send(ok_string);

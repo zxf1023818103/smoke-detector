@@ -22,18 +22,24 @@ static char adc_output_enabled = 0;
 #pragma PERSISTENT(name)
 static char name[32] = "Smoker Detector";
 
+#pragma PERSISTENT(id)
+static unsigned int id = 700;
+
 #elif __IAR_SYSTEMS_ICC__
 
 __persistent static unsigned int sensitivity = 700;
 __persistent static unsigned int alarm_silent_cycles = 96;
 __persistent static char adc_output_enabled = 0;
-__persistent static char name[32];
+__persistent static char name[32] = "Smoker Detector";
+__persistent static unsigned int id = 0;
 
 #else
 
-unsigned int sensitivity = 700;
-unsigned int alarm_silent_cycles = 96;
-char adc_output_enabled = 0;
+static unsigned int sensitivity = 700;
+static unsigned int alarm_silent_cycles = 96;
+static char adc_output_enabled = 0;
+static char name[32] = "Smoker Detector";
+static unsigned int id = 0;
 
 #endif
 
@@ -75,4 +81,14 @@ void settings_set_name(char *value) {
 
 const char *settings_get_name() {
     return name;
+}
+
+void settings_set_id(unsigned int value) {
+    SYSCFG0 = FRWPPW;                   // Program FRAM write enable
+    id = value;
+    SYSCFG0 = FRWPPW | PFWP;            // Program FRAM write protected (not writable)
+}
+
+unsigned int settings_get_id() {
+    return id;
 }

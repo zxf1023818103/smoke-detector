@@ -64,6 +64,8 @@ void settings_set_adc_output_enabled(char value);
 char settings_get_adc_output_enabled();
 void settings_set_name(char *value);
 const char *settings_get_name();
+void settings_set_id(unsigned int value);
+unsigned int settings_get_id();
 
 void command_received_callback(char *command) __attribute__((weak));
 const char* attribute_read_callback(char *attribute) __attribute__((weak));
