@@ -28,7 +28,7 @@ int buzzer_status();
 void alarm_on();
 void alarm_off();
 void alarm_silent();
-unsigned int alarm_silent_cycles();
+unsigned int alarm_get_remain_silent_cycles();
 int alarm_status();
 void alarm_test();
 char alarm_is_test();
@@ -54,15 +54,15 @@ void uart_puts(const char *str);
 void uart_write(const char *data, unsigned int len);
 void uart_newline_callback(char *str, unsigned int len) __attribute__((weak));
 
-void zigbee_send(const char *str);
-void zigbee_println(unsigned short value);
+void zigbee_send(unsigned int sequence_number, const char *str);
+void zigbee_println(unsigned int sequence_number, unsigned short value);
 
 void settings_set_sensitivity(unsigned int value);
 unsigned int settings_get_sensitivity();
 void settings_set_alarm_silent_cycles(unsigned int value);
 unsigned int settings_get_alarm_silent_cycles();
 void settings_set_adc_output_enabled(char value);
-char settings_get_adc_output_enabled();
+char settings_get_adc_report_enabled();
 void settings_set_name(char *value);
 const char *settings_get_name();
 void settings_set_id(unsigned int value);
@@ -71,5 +71,10 @@ unsigned int settings_get_id();
 void command_received_callback(char *command) __attribute__((weak));
 const char* attribute_read_callback(char *attribute) __attribute__((weak));
 int attribute_write_callback(char *attribute, char *value) __attribute__((weak));
+
+int is_digit(char c);
+int isblank(char c);
+int my_atoi(char *value, unsigned int *result);
+char* my_itoa(unsigned int value, char *buffer);
 
 #endif /* SMOKEDETECTOR_H_ */

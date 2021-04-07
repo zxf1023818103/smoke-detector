@@ -54,8 +54,8 @@ void button_released_callback() {
 }
 
 void adc_sample_callback(unsigned short adc_value) {
-    if (settings_get_adc_output_enabled()) {
-        zigbee_println(adc_value);
+    if (settings_get_adc_report_enabled()) {
+        zigbee_println(0, adc_value);
     }
     if (adc_value > settings_get_sensitivity()) {
         alarm_on();
@@ -72,10 +72,9 @@ static const char *name_string = "name";
 static const char *test_string = "test";
 static const char *sensitiviy_string = "sensitivity";
 static const char *alarm_string = "alarm";
-static const char *adc_output_enabled_string = "adc_output_enabled";
+static const char *adc_value_report_enabled_string = "adc_value_report_enabled";
 static const char *alarm_silent_cycles_string = "alarm_silent_cycles";
-static const char *alarm_silent_string = "alarm_silent";
-static const char *ok_string = "ok";
+static const char *remain_alarm_silent_cycles_string = "remain_alarm_silent_cycles";
 
 static char* reverse(char *str, int size) {
     char *i = str, *j = str + size - 1;
@@ -88,7 +87,7 @@ static char* reverse(char *str, int size) {
     return str;
 }
 
-static char* my_itoa(unsigned int value, char *buffer) {
+char* my_itoa(unsigned int value, char *buffer) {
     unsigned int i = 0;
     for (;;) {
         buffer[i++] = value % 10 + '0';
@@ -118,11 +117,11 @@ const char* attribute_read_callback(char *attribute) {
     else if (strcmp(alarm_string, attribute) == 0) {
         return my_itoa(alarm_status(), result);
     }
-    else if (strcmp(adc_output_enabled_string, attribute) == 0) {
-        return my_itoa(settings_get_adc_output_enabled(), result);
+    else if (strcmp(adc_value_report_enabled_string, attribute) == 0) {
+        return my_itoa(settings_get_adc_report_enabled(), result);
     }
-    else if (strcmp(alarm_silent_string, attribute) == 0) {
-        return my_itoa(alarm_silent_cycles(), result);
+    else if (strcmp(remain_alarm_silent_cycles_string, attribute) == 0) {
+        return my_itoa(alarm_get_remain_silent_cycles(), result);
     }
     else if (strcmp(alarm_silent_cycles_string, attribute) == 0) {
         return my_itoa(settings_get_alarm_silent_cycles(), result);
@@ -130,11 +129,11 @@ const char* attribute_read_callback(char *attribute) {
     return 0;
 }
 
-static int is_digit(char c) {
+int is_digit(char c) {
     return '0' <= c && c <= '9';
 }
 
-static int my_atoi(char *value, unsigned int *result) {
+int my_atoi(char *value, unsigned int *result) {
     char *end = value;
     while (*end) {
         end++;
@@ -183,7 +182,7 @@ int attribute_write_callback(char *attribute, char *value) {
                 alarm_silent();
             }
         }
-        else if (strcmp(adc_output_enabled_string, attribute) == 0) {
+        else if (strcmp(adc_value_report_enabled_string, attribute) == 0) {
             settings_set_adc_output_enabled(int_value != 0);
         }
         else if (strcmp(alarm_silent_cycles_string, attribute) == 0) {
@@ -196,10 +195,8 @@ int attribute_write_callback(char *attribute, char *value) {
         /// ok
         return 0;
     }
-    else {
-        /// invalid value
-        return 2;
-    }
+    /// invalid value
+    return 2;
 }
 
 void command_received_callback(char *command) {

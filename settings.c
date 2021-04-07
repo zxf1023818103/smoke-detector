@@ -11,7 +11,7 @@
 #ifdef __TI_COMPILER_VERSION__
 
 #pragma PERSISTENT(sensitivity)
-static unsigned int sensitivity = 700;
+static unsigned int sensitivity = 900;
 
 #pragma PERSISTENT(alarm_silent_cycles)
 static unsigned int alarm_silent_cycles = 96;
@@ -23,7 +23,7 @@ static char adc_output_enabled = 0;
 static char name[32] = "Smoker Detector";
 
 #pragma PERSISTENT(id)
-static unsigned int id = 700;
+static unsigned int id = 0;
 
 #elif __IAR_SYSTEMS_ICC__
 
@@ -69,7 +69,7 @@ void settings_set_adc_output_enabled(char value) {
     SYSCFG0 = FRWPPW | PFWP;            // Program FRAM write protected (not writable)
 }
 
-char settings_get_adc_output_enabled() {
+char settings_get_adc_report_enabled() {
     return adc_output_enabled;
 }
 

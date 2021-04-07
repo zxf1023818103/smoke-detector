@@ -25,7 +25,7 @@ void alarm_on() {
 }
 
 void alarm_off() {
-    zigbee_send("alarm=0");
+    zigbee_send(0, "alarm=0");
     alarm = 0;
 }
 
@@ -37,7 +37,7 @@ void alarm_silent() {
     silent_cycles = settings_get_alarm_silent_cycles();
 }
 
-unsigned int alarm_silent_cycles() {
+unsigned int alarm_get_remain_silent_cycles() {
     return silent_cycles;
 }
 
@@ -55,7 +55,7 @@ void alarm_loop() {
         else {
             buzzer_off();
             led_off();
-            zigbee_send("alarm=1");
+            zigbee_send(0, "alarm=1");
         }
     }
     else {
