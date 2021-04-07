@@ -54,7 +54,7 @@ static void process_option(unsigned int sequence_number, char *key_begin, char *
     *key_end = 0;
     *value_end = 0;
     if (*value_begin == '?') {
-        const char *value = attribute_read_callback(key_begin);
+        const char *value = attribute_read_callback(sequence_number, key_begin);
         if (value) {
             zigbee_send(sequence_number, value);
         }
@@ -63,7 +63,7 @@ static void process_option(unsigned int sequence_number, char *key_begin, char *
         }
     }
     else {
-        int result = attribute_write_callback(key_begin, value_begin);
+        int result = attribute_write_callback(sequence_number, key_begin, value_begin);
         switch (result) {
         case 0:
             zigbee_send(sequence_number, "OK");
@@ -82,7 +82,7 @@ static void process_option(unsigned int sequence_number, char *key_begin, char *
 
 static void process_command(unsigned int sequence_number, char *command_begin, char *command_end) {
     *command_end = 0;
-    command_received_callback(command_begin);
+    command_received_callback(sequence_number, command_begin);
 }
 
 void uart_newline_callback(char *str, unsigned int len) {

@@ -54,8 +54,8 @@ void button_released_callback() {
 }
 
 void adc_sample_callback(unsigned short adc_value) {
-    if (settings_get_adc_report_enabled()) {
-        zigbee_println(0, adc_value);
+    if (settings_get_adc_value_report_enabled()) {
+        zigbee_println(settings_get_adc_value_report_channel(), adc_value);
     }
     if (adc_value > settings_get_sensitivity()) {
         alarm_on();
@@ -100,7 +100,7 @@ char* my_itoa(unsigned int value, char *buffer) {
     return reverse(buffer, i);
 }
 
-const char* attribute_read_callback(char *attribute) {
+const char* attribute_read_callback(unsigned int sequence_number, char *attribute) {
     static char result[6];
     if (strcmp(id_string, attribute) == 0) {
         return my_itoa(settings_get_id(), result);
@@ -115,10 +115,11 @@ const char* attribute_read_callback(char *attribute) {
         return my_itoa(settings_get_sensitivity(), result);
     }
     else if (strcmp(alarm_string, attribute) == 0) {
+        settings_set_alarm_report_channel(sequence_number);
         return my_itoa(alarm_status(), result);
     }
     else if (strcmp(adc_value_report_enabled_string, attribute) == 0) {
-        return my_itoa(settings_get_adc_report_enabled(), result);
+        return my_itoa(settings_get_adc_value_report_enabled(), result);
     }
     else if (strcmp(remain_alarm_silent_cycles_string, attribute) == 0) {
         return my_itoa(alarm_get_remain_silent_cycles(), result);
@@ -154,7 +155,7 @@ int my_atoi(char *value, unsigned int *result) {
     return 1;
 }
 
-int attribute_write_callback(char *attribute, char *value) {
+int attribute_write_callback(unsigned int sequence_number, char *attribute, char *value) {
 
     unsigned int int_value;
     int result = my_atoi(value, &int_value);
@@ -175,6 +176,7 @@ int attribute_write_callback(char *attribute, char *value) {
             settings_set_sensitivity(int_value);
         }
         else if (strcmp(alarm_string, attribute) == 0) {
+            settings_set_alarm_report_channel(sequence_number);
             if (int_value) {
                 alarm_on();
             }
@@ -183,7 +185,8 @@ int attribute_write_callback(char *attribute, char *value) {
             }
         }
         else if (strcmp(adc_value_report_enabled_string, attribute) == 0) {
-            settings_set_adc_output_enabled(int_value != 0);
+            settings_set_adc_value_report_enabled(int_value != 0);
+            settings_set_adc_value_report_channel(sequence_number);
         }
         else if (strcmp(alarm_silent_cycles_string, attribute) == 0) {
             settings_set_alarm_silent_cycles(int_value);
@@ -199,6 +202,6 @@ int attribute_write_callback(char *attribute, char *value) {
     return 2;
 }
 
-void command_received_callback(char *command) {
+void command_received_callback(unsigned int sequence_number, char *command) {
 
 }

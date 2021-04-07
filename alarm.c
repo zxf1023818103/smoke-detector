@@ -25,7 +25,7 @@ void alarm_on() {
 }
 
 void alarm_off() {
-    zigbee_send(0, "alarm=0");
+    zigbee_send(settings_get_alarm_report_channel(), "alarm=0");
     alarm = 0;
 }
 
@@ -55,7 +55,7 @@ void alarm_loop() {
         else {
             buzzer_off();
             led_off();
-            zigbee_send(0, "alarm=1");
+            zigbee_send(settings_get_alarm_report_channel(), "alarm=1");
         }
     }
     else {

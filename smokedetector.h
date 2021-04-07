@@ -61,16 +61,20 @@ void settings_set_sensitivity(unsigned int value);
 unsigned int settings_get_sensitivity();
 void settings_set_alarm_silent_cycles(unsigned int value);
 unsigned int settings_get_alarm_silent_cycles();
-void settings_set_adc_output_enabled(char value);
-char settings_get_adc_report_enabled();
+void settings_set_alarm_report_channel(unsigned int value);
+unsigned int settings_get_alarm_report_channel();
+void settings_set_adc_value_report_channel(unsigned int value);
+unsigned int settings_get_adc_value_report_channel();
+void settings_set_adc_value_report_enabled(char value);
+char settings_get_adc_value_report_enabled();
 void settings_set_name(char *value);
 const char *settings_get_name();
 void settings_set_id(unsigned int value);
 unsigned int settings_get_id();
 
-void command_received_callback(char *command) __attribute__((weak));
-const char* attribute_read_callback(char *attribute) __attribute__((weak));
-int attribute_write_callback(char *attribute, char *value) __attribute__((weak));
+void command_received_callback(unsigned int sequence_number, char *command) __attribute__((weak));
+const char* attribute_read_callback(unsigned int sequence_number, char *attribute) __attribute__((weak));
+int attribute_write_callback(unsigned int sequence_number, char *attribute, char *value) __attribute__((weak));
 
 int is_digit(char c);
 int isblank(char c);
