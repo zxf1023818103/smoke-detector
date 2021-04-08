@@ -98,7 +98,7 @@ void uart_newline_callback(char *str, unsigned int len) {
         begin++;
     }
 
-    char *blank = strchr(begin, ' ');
+    char *blank = my_strchr(begin, ' ');
     if (blank) {
         char *sequence_number_begin = begin, *sequence_number_end = begin;
         while (isdigit(*sequence_number_end)) {
@@ -110,7 +110,7 @@ void uart_newline_callback(char *str, unsigned int len) {
             unsigned int sequence_number;
             my_atoi(sequence_number_begin, &sequence_number);
 
-            char *equals = strchr(blank + 1, '=');
+            char *equals = my_strchr(blank + 1, '=');
             if (equals) {
                 char *key_begin = blank + 1, *key_end = equals;
                 if (trim(&key_begin, &key_end)) {

@@ -80,5 +80,8 @@ int is_digit(char c);
 int isblank(char c);
 int my_atoi(char *value, unsigned int *result);
 char* my_itoa(unsigned int value, char *buffer);
+char* reverse(char *str, int size);
+int my_strcmp(const char *str1, const char *str2);
+char *my_strchr(const char *str, char c);
 
 #endif /* SMOKEDETECTOR_H_ */
