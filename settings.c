@@ -16,7 +16,7 @@ static unsigned int sensitivity = 900;
 #pragma PERSISTENT(alarm_silent_cycles)
 static unsigned int alarm_silent_cycles = 96;
 
-#pragma PERSISTENT(adc_output_enabled)
+#pragma PERSISTENT(adc_value_report_enabled)
 static char adc_value_report_enabled = 0;
 
 #pragma PERSISTENT(alarm_report_channel)

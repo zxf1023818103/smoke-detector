@@ -8,6 +8,16 @@
 #include <msp430.h>
 #include "smokedetector.h"
 
+const char *id_string = "id";
+const char *name_string = "name";
+const char *test_string = "test";
+const char *sensitiviy_string = "sensitivity";
+const char *alarm_string = "alarm";
+const char *adc_value_string = "adc_value";
+const char *adc_value_report_enabled_string = "adc_value_report_enabled";
+const char *alarm_silent_cycles_string = "alarm_silent_cycles";
+const char *remain_alarm_silent_cycles_string = "remain_alarm_silent_cycles";
+
 char test_button;
 
 void setup() {
@@ -51,11 +61,14 @@ void button_released_callback() {
     }
 }
 
-void adc_sample_callback(unsigned short adc_value) {
+static unsigned short adc_value;
+
+void adc_sample_callback(unsigned short value) {
+    adc_value = value;
     if (settings_get_adc_value_report_enabled()) {
-        zigbee_println(settings_get_adc_value_report_channel(), adc_value);
+        zigbee_report_attribute(settings_get_adc_value_report_channel(), adc_value_string, value);
     }
-    if (adc_value > settings_get_sensitivity()) {
+    if (value > settings_get_sensitivity()) {
         alarm_on();
     }
 }
@@ -65,16 +78,7 @@ void timer_500ms_callback() {
     adc_sample();
 }
 
-static const char *id_string = "id";
-static const char *name_string = "name";
-static const char *test_string = "test";
-static const char *sensitiviy_string = "sensitivity";
-static const char *alarm_string = "alarm";
-static const char *adc_value_report_enabled_string = "adc_value_report_enabled";
-static const char *alarm_silent_cycles_string = "alarm_silent_cycles";
-static const char *remain_alarm_silent_cycles_string = "remain_alarm_silent_cycles";
-
-const char* attribute_read_callback(unsigned int sequence_number, char *attribute) {
+const char* attribute_read_callback(unsigned int channel, char *attribute) {
     static char result[6];
     if (my_strcmp(id_string, attribute) == 0) {
         return my_itoa(settings_get_id(), result);
@@ -89,8 +93,11 @@ const char* attribute_read_callback(unsigned int sequence_number, char *attribut
         return my_itoa(settings_get_sensitivity(), result);
     }
     else if (my_strcmp(alarm_string, attribute) == 0) {
-        settings_set_alarm_report_channel(sequence_number);
+        settings_set_alarm_report_channel(channel);
         return my_itoa(alarm_status(), result);
+    }
+    else if (my_strcmp(adc_value_string, attribute) == 0) {
+        return my_itoa(adc_value, result);
     }
     else if (my_strcmp(adc_value_report_enabled_string, attribute) == 0) {
         return my_itoa(settings_get_adc_value_report_enabled(), result);
@@ -104,7 +111,7 @@ const char* attribute_read_callback(unsigned int sequence_number, char *attribut
     return 0;
 }
 
-int attribute_write_callback(unsigned int sequence_number, char *attribute, char *value) {
+int attribute_write_callback(unsigned int channel, char *attribute, char *value) {
 
     unsigned int int_value;
     int result = my_atoi(value, &int_value);
@@ -125,7 +132,7 @@ int attribute_write_callback(unsigned int sequence_number, char *attribute, char
             settings_set_sensitivity(int_value);
         }
         else if (my_strcmp(alarm_string, attribute) == 0) {
-            settings_set_alarm_report_channel(sequence_number);
+            settings_set_alarm_report_channel(channel);
             if (int_value) {
                 alarm_on();
             }
@@ -135,7 +142,7 @@ int attribute_write_callback(unsigned int sequence_number, char *attribute, char
         }
         else if (my_strcmp(adc_value_report_enabled_string, attribute) == 0) {
             settings_set_adc_value_report_enabled(int_value != 0);
-            settings_set_adc_value_report_channel(sequence_number);
+            settings_set_adc_value_report_channel(channel);
         }
         else if (my_strcmp(alarm_silent_cycles_string, attribute) == 0) {
             settings_set_alarm_silent_cycles(int_value);
@@ -151,6 +158,6 @@ int attribute_write_callback(unsigned int sequence_number, char *attribute, char
     return 2;
 }
 
-void command_received_callback(unsigned int sequence_number, char *command) {
+void command_received_callback(unsigned int channel, char *command) {
 
 }

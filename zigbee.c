@@ -9,16 +9,20 @@
 #include <string.h>
 #include "smokedetector.h"
 
-void zigbee_send(unsigned int sequence_number, const char *str) {
+void zigbee_send(unsigned int channel, const char *str) {
     char buffer[7];
-    uart_print(my_itoa(sequence_number, buffer));
-    uart_print(" ");
+    uart_print(my_itoa(channel, buffer));
+    uart_putchar(' ');
     uart_puts(str);
 }
 
-void zigbee_println(unsigned int sequence_number, unsigned short value) {
-    char str[7];
-    zigbee_send(sequence_number, my_itoa(value, str));
+void zigbee_report_attribute(unsigned int channel, const char *attribute, unsigned short value) {
+    char buffer[7];
+    uart_print(my_itoa(channel, buffer));
+    uart_putchar(' ');
+    uart_print(attribute);
+    uart_putchar('=');
+    uart_puts(my_itoa(value, buffer));
 }
 
 int isblank(char c) {
@@ -50,29 +54,29 @@ static int isdigit(char c) {
     return '0' <= c && c <= '9';
 }
 
-static void process_option(unsigned int sequence_number, char *key_begin, char *key_end, char *value_begin, char *value_end) {
+static void process_option(unsigned int channel, char *key_begin, char *key_end, char *value_begin, char *value_end) {
     *key_end = 0;
     *value_end = 0;
     if (*value_begin == '?') {
-        const char *value = attribute_read_callback(sequence_number, key_begin);
+        const char *value = attribute_read_callback(channel, key_begin);
         if (value) {
-            zigbee_send(sequence_number, value);
+            zigbee_send(channel, value);
         }
         else {
-            zigbee_send(sequence_number, "ERROR invalid key");
+            zigbee_send(channel, "ERROR invalid key");
         }
     }
     else {
-        int result = attribute_write_callback(sequence_number, key_begin, value_begin);
+        int result = attribute_write_callback(channel, key_begin, value_begin);
         switch (result) {
         case 0:
-            zigbee_send(sequence_number, "OK");
+            zigbee_send(channel, "OK");
             break;
         case 1:
-            zigbee_send(sequence_number, "ERROR invalid key or unsupported operation");
+            zigbee_send(channel, "ERROR invalid key or unsupported operation");
             break;
         case 2:
-            zigbee_send(sequence_number, "ERROR invalid value");
+            zigbee_send(channel, "ERROR invalid value");
             break;
         default:
             break;
@@ -80,9 +84,9 @@ static void process_option(unsigned int sequence_number, char *key_begin, char *
     }
 }
 
-static void process_command(unsigned int sequence_number, char *command_begin, char *command_end) {
+static void process_command(unsigned int channel, char *command_begin, char *command_end) {
     *command_end = 0;
-    command_received_callback(sequence_number, command_begin);
+    command_received_callback(channel, command_begin);
 }
 
 void uart_newline_callback(char *str, unsigned int len) {
@@ -100,15 +104,15 @@ void uart_newline_callback(char *str, unsigned int len) {
 
     char *blank = my_strchr(begin, ' ');
     if (blank) {
-        char *sequence_number_begin = begin, *sequence_number_end = begin;
-        while (isdigit(*sequence_number_end)) {
-            sequence_number_end++;
+        char *channel_begin = begin, *channel_end = begin;
+        while (isdigit(*channel_end)) {
+            channel_end++;
         }
-        if (sequence_number_end == blank) {
-            *sequence_number_end = 0;
+        if (channel_end == blank) {
+            *channel_end = 0;
 
-            unsigned int sequence_number;
-            my_atoi(sequence_number_begin, &sequence_number);
+            unsigned int channel;
+            my_atoi(channel_begin, &channel);
 
             char *equals = my_strchr(blank + 1, '=');
             if (equals) {
@@ -116,24 +120,24 @@ void uart_newline_callback(char *str, unsigned int len) {
                 if (trim(&key_begin, &key_end)) {
                     char *value_begin = equals + 1, *value_end = end;
                     if (trim(&value_begin, &value_end)) {
-                        process_option(sequence_number, key_begin, key_end, value_begin, value_end);
+                        process_option(channel, key_begin, key_end, value_begin, value_end);
                         return;
                     }
                     else {
-                        zigbee_send(sequence_number, "ERROR excepted option value");
+                        zigbee_send(channel, "ERROR excepted option value");
                     }
                 }
                 else {
-                    zigbee_send(sequence_number, "ERROR excepted option name");
+                    zigbee_send(channel, "ERROR excepted option name");
                 }
             }
             else {
                 char *command_begin = begin, *command_end = end;
                 if (trim(&command_begin, &command_end)) {
-                    process_command(sequence_number, command_begin, command_end);
+                    process_command(channel, command_begin, command_end);
                 }
                 else {
-                    zigbee_send(sequence_number, "ERROR excepted command");
+                    zigbee_send(channel, "ERROR excepted command");
                 }
             }
         }
@@ -142,6 +146,6 @@ void uart_newline_callback(char *str, unsigned int len) {
         }
     }
     else {
-        zigbee_send(0, "ERROR excepted sequence number");
+        zigbee_send(0, "ERROR excepted channel");
     }
 }

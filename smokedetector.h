@@ -54,8 +54,8 @@ void uart_puts(const char *str);
 void uart_write(const char *data, unsigned int len);
 void uart_newline_callback(char *str, unsigned int len) __attribute__((weak));
 
-void zigbee_send(unsigned int sequence_number, const char *str);
-void zigbee_println(unsigned int sequence_number, unsigned short value);
+void zigbee_send(unsigned int channel, const char *str);
+void zigbee_report_attribute(unsigned int channel, const char *attribute, unsigned short value);
 
 void settings_set_sensitivity(unsigned int value);
 unsigned int settings_get_sensitivity();
@@ -72,9 +72,9 @@ const char *settings_get_name();
 void settings_set_id(unsigned int value);
 unsigned int settings_get_id();
 
-void command_received_callback(unsigned int sequence_number, char *command) __attribute__((weak));
-const char* attribute_read_callback(unsigned int sequence_number, char *attribute) __attribute__((weak));
-int attribute_write_callback(unsigned int sequence_number, char *attribute, char *value) __attribute__((weak));
+void command_received_callback(unsigned int channel, char *command) __attribute__((weak));
+const char* attribute_read_callback(unsigned int channel, char *attribute) __attribute__((weak));
+int attribute_write_callback(unsigned int channel, char *attribute, char *value) __attribute__((weak));
 
 int is_digit(char c);
 int isblank(char c);

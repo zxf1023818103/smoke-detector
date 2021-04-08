@@ -4,7 +4,7 @@
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_PROGRAM.MSP430FR2311.ccxml.TI MSP430 USB1/MSP430" value="${build_artifact:smoke-detector}"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_PROJECT.MSP430FR2311.ccxml.TI MSP430 USB1/MSP430" value="smoke-detector"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_TARGET_CONFIG" value="${target_config_active_default:smoke-detector}"/>
-<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.MSP430FR2311.ccxml.TI MSP430 USB1/MSP430" value="C:\Users\zxf\workspace_v10\smoke-detector\Debug\smoke-detector.out"/>
+<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.MSP430FR2311.ccxml.TI MSP430 USB1/MSP430" value="C:\Users\zxf\workspace_v10\smoke-detector\Release\smoke-detector.out"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/smoke-detector"/>
 </listAttribute>

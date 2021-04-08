@@ -12,6 +12,8 @@ static char test;
 static char alarm;
 static unsigned int silent_cycles;
 
+extern const char *alarm_string;
+
 void alarm_test() {
     test = 1;
 }
@@ -25,8 +27,8 @@ void alarm_on() {
 }
 
 void alarm_off() {
-    zigbee_send(settings_get_alarm_report_channel(), "alarm=0");
     alarm = 0;
+    zigbee_report_attribute(settings_get_alarm_report_channel(), alarm_string, alarm);
 }
 
 int alarm_status() {
@@ -55,7 +57,7 @@ void alarm_loop() {
         else {
             buzzer_off();
             led_off();
-            zigbee_send(settings_get_alarm_report_channel(), "alarm=1");
+            zigbee_report_attribute(settings_get_alarm_report_channel(), alarm_string, alarm);
         }
     }
     else {
