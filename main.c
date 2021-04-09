@@ -118,6 +118,7 @@ int attribute_write_callback(unsigned int channel, char *attribute, char *value)
 
     if (my_strcmp(name_string, attribute) == 0) {
         settings_set_name(value);
+        return 0;
     }
     else if (result) {
         if (my_strcmp(id_string, attribute) == 0) {

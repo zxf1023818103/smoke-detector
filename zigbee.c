@@ -16,13 +16,19 @@ void zigbee_send(unsigned int channel, const char *str) {
     uart_puts(str);
 }
 
-void zigbee_report_attribute(unsigned int channel, const char *attribute, unsigned short value) {
+void zigbee_send_read_request_response(unsigned int channel, const char *str) {
     char buffer[7];
     uart_print(my_itoa(channel, buffer));
     uart_putchar(' ');
-    uart_print(attribute);
-    uart_putchar('=');
-    uart_puts(my_itoa(value, buffer));
+    uart_print("OK");
+    uart_putchar(' ');
+    uart_puts(str);
+}
+
+void zigbee_report_attribute(unsigned int channel, const char *attribute, unsigned short value) {
+    (void) attribute;
+    char buffer[7];
+    zigbee_send_read_request_response(channel, my_itoa(value, buffer));
 }
 
 int isblank(char c) {
@@ -50,17 +56,13 @@ static int trim(char **begin, char **end) {
     }
 }
 
-static int isdigit(char c) {
-    return '0' <= c && c <= '9';
-}
-
-static void process_option(unsigned int channel, char *key_begin, char *key_end, char *value_begin, char *value_end) {
+static void process_attribute(unsigned int channel, char *key_begin, char *key_end, char *value_begin, char *value_end) {
     *key_end = 0;
     *value_end = 0;
     if (*value_begin == '?') {
         const char *value = attribute_read_callback(channel, key_begin);
         if (value) {
-            zigbee_send(channel, value);
+            zigbee_send_read_request_response(channel, value);
         }
         else {
             zigbee_send(channel, "ERROR invalid key");
@@ -105,7 +107,7 @@ void uart_newline_callback(char *str, unsigned int len) {
     char *blank = my_strchr(begin, ' ');
     if (blank) {
         char *channel_begin = begin, *channel_end = begin;
-        while (isdigit(*channel_end)) {
+        while (is_digit(*channel_end)) {
             channel_end++;
         }
         if (channel_end == blank) {
@@ -120,7 +122,7 @@ void uart_newline_callback(char *str, unsigned int len) {
                 if (trim(&key_begin, &key_end)) {
                     char *value_begin = equals + 1, *value_end = end;
                     if (trim(&value_begin, &value_end)) {
-                        process_option(channel, key_begin, key_end, value_begin, value_end);
+                        process_attribute(channel, key_begin, key_end, value_begin, value_end);
                         return;
                     }
                     else {

@@ -56,6 +56,7 @@ void uart_newline_callback(char *str, unsigned int len) __attribute__((weak));
 
 void zigbee_send(unsigned int channel, const char *str);
 void zigbee_report_attribute(unsigned int channel, const char *attribute, unsigned short value);
+void zigbee_send_read_request_response(unsigned int channel, const char *str);
 
 void settings_set_sensitivity(unsigned int value);
 unsigned int settings_get_sensitivity();
