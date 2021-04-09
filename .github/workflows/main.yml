@@ -42,7 +42,7 @@ jobs:
         run: /opt/ti/ccs1020/ccs/eclipse/eclipse -noSplash -data $GITHUB_WORKSPACE/.. -application com.ti.ccstudio.apps.projectImport -ccs.location $GITHUB_WORKSPACE
 
       - name: Build Project
-        run: /opt/ti/ccs1020/ccs/eclipse/eclipse -noSplash -data $GITHUB_WORKSPACE/.. -application com.ti.ccstudio.apps.projectBuild -ccs.workspace
+        run: /opt/ti/ccs1020/ccs/eclipse/eclipse -noSplash -data $GITHUB_WORKSPACE/.. -application com.ti.ccstudio.apps.projectBuild -ccs.workspace -ccs.configuration Release
 
       - name: Release
         uses: softprops/action-gh-release@v1
