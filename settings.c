@@ -26,7 +26,7 @@ static unsigned int alarm_report_channel = 0;
 static unsigned int adc_value_report_channel = 0;
 
 #pragma PERSISTENT(name)
-static char name[32] = "Smoker Detector";
+static char name[32] = "Smoke Detector";
 
 #pragma PERSISTENT(id)
 static unsigned int id = 0;
