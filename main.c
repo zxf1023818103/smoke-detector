@@ -97,6 +97,7 @@ const char* attribute_read_callback(unsigned int channel, char *attribute) {
         return my_itoa(alarm_status(), result);
     }
     else if (my_strcmp(adc_value_string, attribute) == 0) {
+        settings_set_adc_value_report_channel(channel);
         return my_itoa(adc_value, result);
     }
     else if (my_strcmp(adc_value_report_enabled_string, attribute) == 0) {
@@ -143,7 +144,6 @@ int attribute_write_callback(unsigned int channel, char *attribute, char *value)
         }
         else if (my_strcmp(adc_value_report_enabled_string, attribute) == 0) {
             settings_set_adc_value_report_enabled(int_value != 0);
-            settings_set_adc_value_report_channel(channel);
         }
         else if (my_strcmp(alarm_silent_cycles_string, attribute) == 0) {
             settings_set_alarm_silent_cycles(int_value);
