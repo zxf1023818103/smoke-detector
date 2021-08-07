@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-lastest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Download MSP430 GCC Installer
