@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: centos-8
+    runs-on: centos-lastest
 
     steps:
       - name: Download MSP430 GCC Installer
