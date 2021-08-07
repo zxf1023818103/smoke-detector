@@ -41,6 +41,16 @@ __persistent static unsigned int adc_value_report_channel = 0;
 __persistent static char name[32] = "Smoker Detector";
 __persistent static unsigned int id = 0;
 
+#elif __GNUC__
+
+__attribute__ ((persistent)) static unsigned int sensitivity = 700;
+__attribute__ ((persistent)) static unsigned int alarm_silent_cycles = 96;
+__attribute__ ((persistent)) static char adc_value_report_enabled = 0;
+__attribute__ ((persistent)) static unsigned int alarm_report_channel = 0;
+__attribute__ ((persistent)) static unsigned int adc_value_report_channel = 0;
+__attribute__ ((persistent)) static char name[32] = "Smoker Detector";
+__attribute__ ((persistent)) static unsigned int id = 0;
+
 #else
 
 static unsigned int sensitivity = 700;
