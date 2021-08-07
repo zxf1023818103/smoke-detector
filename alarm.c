@@ -28,7 +28,7 @@ void alarm_on() {
 
 void alarm_off() {
     alarm = 0;
-    zigbee_report_attribute(settings_get_alarm_report_channel(), alarm_string, alarm);
+    /// TODO: report alarm status
 }
 
 int alarm_status() {
@@ -57,7 +57,7 @@ void alarm_loop() {
         else {
             buzzer_off();
             led_off();
-            zigbee_report_attribute(settings_get_alarm_report_channel(), alarm_string, alarm);
+            /// TODO: report alarm status
         }
     }
     else {

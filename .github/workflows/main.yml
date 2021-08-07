@@ -7,48 +7,39 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: centos-8
 
     steps:
-      - name: Cache CCSv10
-        id: ccs
-        uses: actions/cache@v2
-        with:
-          path: /opt/ti
-          key: ${{ runner.os }}-ccs
-      
-      - name: Download CCSv10 Installer
-        if: steps.ccs.outputs.cache-hit != 'true'
-        run: curl -L "https://downloads.ti.com/ccs/esd/CCSv10/CCS_10_2_0/exports/CCS10.2.0.00009_linux-x64.tar.gz" | tar xzf - -C /tmp
+      - name: Download MSP430 GCC Installer
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: curl -L http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSPGCC/9_3_1_2/export/msp430-gcc-full-linux-x64-installer-9.3.1.2.7z -O /tmp/installer.7z
       
       - name: Install Dependences
-        run: sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install -y libc6:i386 libusb-0.1-4 libgconf-2-4 libncurses5 libpython2.7 libtinfo5
+        run: sudo yum install -y p7zip cmake
       
-      - name: Install CCSv10
-        if: steps.ccs.outputs.cache-hit != 'true'
-        run: sudo /tmp/CCS10.2.0.00009_linux-x64/ccs_setup_10.2.0.00009.run --enable-components PF_MSP430 --mode unattended
-      
-      - name: Install TI MSP430 Compiler
-        if: steps.ccs.outputs.cache-hit != 'true'
+      - name: Install MSP430 GCC Compiler
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          sudo /opt/ti/ccs1020/ccs/eclipse/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository  http://software-dl.ti.com/dsps/dsps_public_sw/sdo_ccstudio/codegen/Updates/p2linux/ -installIU com.ti.cgt.msp430.21.linux.feature.group/20.12.0 -tag "MSP430 Compiler Tools"
-          sudo /opt/ti/ccs1020/ccs/eclipse/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository  http://software-dl.ti.com/dsps/dsps_public_sw/sdo_ccstudio/codegen/Updates/p2linux/ -installIU com.ti.cgt.msp430.21.linux_root/20.12.0 -tag "MSP430 Compiler Tools"
-          sudo /opt/ti/ccs1020/ccs/eclipse/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository  http://software-dl.ti.com/dsps/dsps_public_sw/sdo_ccstudio/codegen/Updates/p2linux/ -installIU com.ti.cgt.msp430.21.linux.feature.jar/20.12.0 -tag "MSP430 Compiler Tools"
-        
+          7z x /tmp/installer.7z -o/tmp
+          sudo /tmp/msp430-gcc-full-linux-x64-installer-9.3.1.2.run --mode unattended --prefix /opt/ti/msp430-gcc
+
+      - name: Cache MSP430 GCC Compiler
+        id: cache
+        with:
+          path: /opt
+          key: ${{ runner.os }}
+
       - name: Checkout
         uses: actions/checkout@v2
       
-      - name: Import Project
-        run: /opt/ti/ccs1020/ccs/eclipse/eclipse -noSplash -data $GITHUB_WORKSPACE/.. -application com.ti.ccstudio.apps.projectImport -ccs.location $GITHUB_WORKSPACE
-
       - name: Build Project
-        run: /opt/ti/ccs1020/ccs/eclipse/eclipse -noSplash -data $GITHUB_WORKSPACE/.. -application com.ti.ccstudio.apps.projectBuild -ccs.workspace -ccs.configuration Release
+        run: cmake . && make
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           fail_on_unmatched_files: true
-          files: ${{ github.workspace }}/Debug/smoke-detector.out
+          files: ${{ github.workspace }}/smoke-detector.out
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

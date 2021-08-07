@@ -73,10 +73,10 @@ void __attribute__ ((interrupt(USCI_A0_VECTOR))) USCI_A0_ISR (void)
                 rxbuf_size = 0;
             }
             rxbuf[rxbuf_size++] = UCA0RXBUF_L;
-            if (UCA0RXBUF_L == '\n') {
-                uart_newline_callback(rxbuf, rxbuf_size);
-                rxbuf_size = 0;
-            }
+            
+            /// TODO: handle uart input
+
+            
             break;
         case USCI_UART_UCTXIFG: break;
         case USCI_UART_UCSTTIFG: break;
