@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: centos-lastest
+    runs-on: ubuntu-lastest
 
     steps:
       - name: Download MSP430 GCC Installer
@@ -15,7 +15,7 @@ jobs:
         run: curl -L http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSPGCC/9_3_1_2/export/msp430-gcc-full-linux-x64-installer-9.3.1.2.7z -O /tmp/installer.7z
       
       - name: Install Dependences
-        run: sudo yum install -y p7zip cmake
+        run: sudo apt-get install -y p7zip-full cmake
       
       - name: Install MSP430 GCC Compiler
         if: steps.cache.outputs.cache-hit != 'true'
