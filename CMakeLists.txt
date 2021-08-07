@@ -9,7 +9,5 @@ add_executable(smoke-detector.out adc.c alarm.c button.c buzzer.c clock.c led.c 
 set(DEVICE MSP430FR2311)
 set(MAP smoke-detector.map)
 
-#target_include_directories(smoke-detector.out PRIVATE /opt/ti/msp430-gcc/include)
-#target_link_directories(smoke-detector.out PRIVATE /opt/ti/msp430-gcc/include)
 target_link_options(smoke-detector.out PRIVATE -mmcu=${DEVICE} -Os -Wall -Wl,-Map,${MAP},--gc-sections -s)
 target_compile_options(smoke-detector.out PRIVATE -mmcu=${DEVICE} -Os -Wall -c)

@@ -22,6 +22,7 @@ jobs:
         run: |
           7z x /tmp/installer.7z -o/tmp
           sudo /tmp/msp430-gcc-full-linux-x64-installer-9.3.1.2.run --mode unattended --prefix /opt/ti/msp430-gcc
+          export PATH=/opt/ti/msp430-gcc/bin:$PATH
 
       - name: Cache MSP430 GCC Compiler
         id: cache
