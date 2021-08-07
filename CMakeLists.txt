@@ -2,9 +2,7 @@ cmake_minimum_required(VERSION 3.2.0)
 
 set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)
 
-set(CMAKE_C_LINK_FLAGS "")
-set(CMAKE_C_LINK_LIBRARY_FLAG "")
-set(CMAKE_C_FLAGS "")
+SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 
 project(smoke-detector C)
 
