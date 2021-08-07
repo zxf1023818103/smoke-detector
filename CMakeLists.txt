@@ -2,15 +2,18 @@ cmake_minimum_required(VERSION 3.2.0)
 
 set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)
 
+set(CMAKE_C_LINK_FLAGS "")
+set(CMAKE_C_FLAGS "")
+
 project(smoke-detector C)
 
 add_executable(smoke-detector.out adc.c alarm.c button.c buzzer.c clock.c led.c main.c settings.c smokedetector.h timer.c uart.c watchdog.c)
 
-SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-SET(TOOLCHAIN_DIR /opt/ti/msp430-gcc)
-SET(CMAKE_FIND_ROOT_PATH ${TOOLCHAIN_DIR})
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(TOOLCHAIN_DIR /opt/ti/msp430-gcc)
+set(CMAKE_FIND_ROOT_PATH ${TOOLCHAIN_DIR})
 
 set(CMAKE_C_COMPILER ${TOOLCHAIN_DIR}/bin/msp430-elf-gcc)
 set(DEVICE MSP430FR2311)
