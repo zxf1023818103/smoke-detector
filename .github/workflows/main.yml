@@ -25,6 +25,7 @@ jobs:
 
       - name: Cache MSP430 GCC Compiler
         id: cache
+        uses: actions/cache@v2
         with:
           path: /opt
           key: ${{ runner.os }}
