@@ -67,3 +67,10 @@ char *my_strchr(const char *str, char c) {
     }
     return 0;
 }
+
+void my_strncpy(char *dst, char *src, unsigned int size) {
+    while (*src && size) {
+        *dst++ = *src++;
+        size--;
+    }
+}

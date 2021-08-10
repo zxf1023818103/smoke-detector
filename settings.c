@@ -5,8 +5,8 @@
  *      Author: Zeng Xiangfei
  */
 
-#include <string.h>
 #include <msp430.h>
+#include "smokedetector.h"
 
 #ifdef __TI_COMPILER_VERSION__
 
@@ -105,7 +105,7 @@ char settings_get_adc_value_report_enabled() {
 
 void settings_set_name(char *value) {
     SYSCFG0 = FRWPPW;                   // Program FRAM write enable
-    strncpy(name, value, sizeof name);
+    my_strncpy(name, value, sizeof name);
     SYSCFG0 = FRWPPW | PFWP;            // Program FRAM write protected (not writable)
 }
 

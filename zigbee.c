@@ -31,9 +31,14 @@ void zigbee_report_attribute(unsigned int channel, const char *attribute, unsign
     zigbee_send_read_request_response(channel, my_itoa(value, buffer));
 }
 
-int isblank(char c) {
+// Use GCC built-in function.
+#ifndef __GNUC__ 
+
+int isblank(int c) {
     return c == ' ' || c == '\t';
 }
+
+#endif
 
 static int trim(char **begin, char **end) {
     if (*begin >= *end) {

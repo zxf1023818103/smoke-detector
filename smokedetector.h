@@ -78,11 +78,12 @@ const char* attribute_read_callback(unsigned int channel, char *attribute) __att
 int attribute_write_callback(unsigned int channel, char *attribute, char *value) __attribute__((weak));
 
 int is_digit(char c);
-int isblank(char c);
+int isblank(int c);
 int my_atoi(char *value, unsigned int *result);
 char* my_itoa(unsigned int value, char *buffer);
 char* reverse(char *str, int size);
 int my_strcmp(const char *str1, const char *str2);
 char *my_strchr(const char *str, char c);
+void my_strncpy(char *dst, char *src, unsigned int size);
 
 #endif /* SMOKEDETECTOR_H_ */
