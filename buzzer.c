@@ -19,13 +19,13 @@ void buzzer_init() {
 
 void buzzer_on() {
     buzzer = 1;
-    P2DIR |= BIT7;
+    P2DIR |= BIT0;
     TB1CTL |= MC__UP;
 }
 
 void buzzer_off() {
     buzzer = 0;
-    P2DIR &= ~BIT7;
+    P2DIR &= ~BIT0;
     TB1CTL &= ~MC__UP;
 }
 
@@ -43,5 +43,5 @@ void __attribute__ ((interrupt(TIMER1_B0_VECTOR))) Timer1_B0_ISR (void)
 #error Compiler not supported!
 #endif
 {
-    P2OUT ^= BIT7;
+    P2OUT ^= BIT0;
 }
