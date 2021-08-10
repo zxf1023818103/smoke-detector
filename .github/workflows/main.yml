@@ -11,24 +11,15 @@ jobs:
 
     steps:
       - name: Download MSP430 GCC Installer
-        if: steps.cache.outputs.cache-hit != 'true'
         run: curl -L http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSPGCC/9_3_1_2/export/msp430-gcc-full-linux-x64-installer-9.3.1.2.7z --output /tmp/installer.7z
       
       - name: Install Dependences
         run: sudo apt-get install -y p7zip-full cmake
       
       - name: Install MSP430 GCC Compiler
-        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           7z x /tmp/installer.7z -o/tmp
           sudo /tmp/msp430-gcc-full-linux-x64-installer-9.3.1.2.run --mode unattended --prefix /opt/ti/msp430-gcc
-
-      - name: Cache MSP430 GCC Compiler
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: /opt
-          key: ${{ runner.os }}
 
       - name: Checkout
         uses: actions/checkout@v2
