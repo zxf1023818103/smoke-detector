@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Build Project
-        run: PATH=/opt/ti/msp430-gcc/bin:$PATH cmake . && make
+        run: PATH=/opt/ti/msp430-gcc/bin:$PATH cmake . && cmake --build .
 
       - name: Release
         uses: softprops/action-gh-release@v1
