@@ -13,4 +13,7 @@ target_link_options(${CMAKE_PROJECT_NAME}.elf PRIVATE -mmcu=${DEVICE} -Os -Wall 
 target_compile_options(${CMAKE_PROJECT_NAME}.elf PRIVATE -mmcu=${DEVICE} -Os -Wall -c)
 add_custom_target(${CMAKE_PROJECT_NAME}.out
                 DEPENDS ${CMAKE_PROJECT_NAME}.elf
-                COMMAND ${CMAKE_OBJCOPY} -Oihex ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.elf ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.out)
+                COMMAND ${CMAKE_OBJCOPY} -Oihex -S ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.elf ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.out)
+add_custom_target(${CMAKE_PROJECT_NAME}.bin
+                DEPENDS ${CMAKE_PROJECT_NAME}.elf
+                COMMAND ${CMAKE_OBJCOPY} -Obinary -S ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.elf ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.bin)
